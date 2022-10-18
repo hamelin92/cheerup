@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.curation.model.dao.UserScrapfeedMyfeedDao">
+	<resultMap type="UserScrapfeedMyfeedDto" id="scrapMap">
+      <id column="myfeed_id" property="myfeedId"/>
+      <result column="user_id" property="userId"/>
+      <result column="feed_id" property="feedId"/>
+      <result column="myfeed_date" property="myfeedDate"/>
+      <result column="board_id" property="boardId"/>
+      <result column="scrapfeed_type" property="scrapfeedType"/>
+	</resultMap>
+	
+	<resultMap type="UserScrapfeedMyfeedJoinDto" id="scrapJoinMap">
+      <id column="myfeed_id" property="myfeedId"/>
+      <result column="user_id" property="userId"/>
+      <result column="feed_id" property="feedId"/>
+      <result column="board_id" property="boardId"/>
+      <result column="myfeed_date" property="myfeedDate"/>
+      <result column="scrapfeed_type" property="scrapfeedType"/>
+      <result column="feed_type" property="feedType"/>
+      <result column="feed_url" property="feedUrl"/>
+      <result column="feed_source" property="feedSource"/>
+      <result column="feed_title" property="feedTitle"/>
+      <result column="feed_content" property="feedContent"/>
+      <result column="feed_author" property="feedAuthor"/>
+      <result column="feed_date" property="feedDate"/>
+      <result column="feed_category" property="feedCategory"/>
+      <result column="feed_img_name" property="feedImgName"/>
+      <result column="feed_img_url" property="feedImgUrl"/>
+	</resultMap>
+	
+	<insert id="insertScrap" parameterType="userScrapfeedMyfeedDto">
+		INSERT INTO user_feed_myfeed(user_id, feed_id, myfeed_date, board_id, scrapfeed_type)
+		VALUES(#{userId}, #{feedId}, now(), #{boardId}, #{scrapfeedType})
+	</insert>
+	
+	<select id="selectMyScrap" resultMap="scrapJoinMap" parameterType="int">
+		SELECT *
+		FROM user_feed_myfeed AS uf JOIN feed f
+			ON uf.feed_id = f.feed_id
+		WHERE uf.user_id = #{userId};
+	</select>
+	
+	<select id="selectMyScrapEachBoard" resultMap="scrapJoinMap" parameterType="int">
+		SELECT *
+		FROM user_feed_myfeed AS uf JOIN feed f
+			ON uf.feed_id = f.feed_id
+		WHERE user_id = #{userId}
+			AND
+			  board_id = #{boardId}
+	</select>
+	
+	<update id="updateScrap" parameterType="int">
+		UPDATE user_feed_myfeed
+		SET board_id = #{boardId}
+		WHERE myfeed_id = #{myfeedId}
+	</update>
+	
+	<delete id="deleteScrap" parameterType="int">
+		DELETE FROM user_feed_myfeed
+		WHERE myfeed_id = #{myfeedId}
+	</delete>
+</mapper>
